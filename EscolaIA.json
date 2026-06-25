@@ -1,0 +1,549 @@
+{
+  "name": "EscolaIA",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "waha",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "a6637253-6f98-4d97-977c-5142f1904e2d",
+      "name": "Webhook",
+      "webhookId": "7a89730d-a76e-409a-bb66-cba22ddeedcf"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "d896e269-d7d3-4b9e-a74d-5d987bf12c55",
+              "name": "session",
+              "value": "={{ $json.body.session }}",
+              "type": "string"
+            },
+            {
+              "id": "4c35a867-c157-434f-a744-ad401a60c4fb",
+              "name": "from",
+              "value": "={{ $json.body.payload.from }}",
+              "type": "string"
+            },
+            {
+              "id": "a505862b-0c45-4fd1-ae43-a8c90424a11e",
+              "name": "fromMe",
+              "value": "={{ $json.body.payload.fromMe }}",
+              "type": "boolean"
+            },
+            {
+              "id": "69d476ab-6b12-4fac-a242-218912074605",
+              "name": "source",
+              "value": "={{ $json.body.payload.source }}",
+              "type": "string"
+            },
+            {
+              "id": "b5379c1a-7adc-476e-9ea5-e5b6accb3963",
+              "name": "body",
+              "value": "={{ $json.body.payload.body }}",
+              "type": "string"
+            },
+            {
+              "id": "1fd7c00d-0bfa-4ed1-9e7a-8d566360b1cd",
+              "name": "type",
+              "value": "={{ $json.body.payload._data.type }}",
+              "type": "string"
+            },
+            {
+              "id": "fcef30e2-66a0-4757-b54b-e379ec8d660c",
+              "name": "id",
+              "value": "={{ $json.body.payload._data.id.id }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        208,
+        0
+      ],
+      "id": "18fdc29c-6943-4ed9-bf14-b90096a7a1ee",
+      "name": "dados"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "8baad521-f476-4e26-a7d6-f94262113328",
+              "leftValue": "={{ $json.source }}",
+              "rightValue": "api",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        416,
+        0
+      ],
+      "id": "bc0dbb09-f28b-4b70-8517-bd7949ad5497",
+      "name": "ignora API"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "e53bd301-e09c-4815-b967-58531bb1af16",
+              "leftValue": "={{ $('Webhook').item.json.body.payload.to }}",
+              "rightValue": "@g.us",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        624,
+        96
+      ],
+      "id": "12e38987-19d5-4fb1-8c46-e580f8c6d6df",
+      "name": "ignora grupos"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $('dados').item.json.body }}",
+        "options": {
+          "systemMessage": "Você é a EscolaIA, uma assistente virtual inteligente integrada ao WhatsApp que apoia professores da educação básica e do ensino médio no planejamento pedagógico. Seu objetivo principal é reduzir a sobrecarga de trabalho dos professores, gerando materiais personalizados de forma rápida, prática e acolhedora.\n\n### 1. DIRETRIZES DE PERSONA E TOM DE VOZ\n* **Tom:** Prestativo, profissional, empático e focado na produtividade do professor.\n* **Canal:** Como você opera via WhatsApp, suas mensagens devem ser diretas, bem formatadas (use negritos e listas para facilitar a leitura no celular) e sem textos excessivamente longos de uma só vez.\n\n### 2. FLUXO DE INTERAÇÃO (ONBOARDING E COLETA)\nCaso seja o primeiro contato do usuário, siga rigorosamente as etapas do processo crítico:\n1. **Apresentação:** Apresente a proposta de valor da EscolaIA (economia de tempo e facilidade).\n2. **Coleta de Informações Básicas:** Pergunte (uma de cada vez ou de forma amigável) as informações necessárias: Área de ensino, Série/Ano, Disciplina e Tema da aula.\n3. **Alinhamento:** Garanta que os conteúdos gerados estejam sempre adaptados às diretrizes da BNCC (Base Nacional Comum Curricular).\n\n### 3. CAPACIDADES DE GERAÇÃO DE CONTEÚDO\nVocê está programado para gerar os seguintes materiais pedagógicos mediante solicitação:\n* **Planos de aula** completos e estruturados.\n* **Avaliações e Provas** com questões contextualizadas.\n* **Listas de exercícios** (com gabarito, se solicitado).\n* **Atividades práticas e Resumos** teóricos.\n* **Sugestões de dinâmicas** interativas para a sala de aula.\n\n### 4. REGRAS DE EXECUÇÃO e REVISÃO\n* Sempre ofereça espaço para que o professor avalie o conteúdo gerado. Se ele não estiver totalmente satisfeito (\"Atendeu as expectativas? Não\"), faça os ajustes e novas sugestões de forma ágil.\n* Caso o usuário peça algo fora do escopo pedagógico, lembre-o gentilmente de que seu foco é ajudar no planejamento escolar e na criação de materiais educativos."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        832,
+        192
+      ],
+      "id": "aaa95f08-44ea-4c00-a3e6-db48dc610737",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-3.1-flash-lite",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1.1,
+      "position": [
+        704,
+        400
+      ],
+      "id": "e1524499-e5a7-46c8-8eef-897035800273",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "M4ZdAncYTNcOkJzS",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $('dados').item.json.from }}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.4,
+      "position": [
+        848,
+        400
+      ],
+      "id": "2426a94a-c2a3-46a1-8724-2435b1bd146e",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "resource": "Chatting",
+        "operation": "Send Seen",
+        "session": "={{ $('dados').item.json.session }}",
+        "chatId": "={{ $('dados').item.json.from }}",
+        "messageId": "={{ $('dados').item.json.id }}",
+        "participant": "",
+        "requestOptions": {}
+      },
+      "type": "n8n-nodes-waha.WAHA",
+      "typeVersion": 202411,
+      "position": [
+        1184,
+        192
+      ],
+      "id": "3d83a554-7dde-4117-9454-dff06e976e61",
+      "name": "Send Seen",
+      "credentials": {
+        "wahaApi": {
+          "id": "qAKBG6FtE0uW8RZk",
+          "name": "WAHA account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "Chatting",
+        "operation": "Send Text",
+        "session": "={{ $('dados').item.json.session }}",
+        "chatId": "={{ $('dados').item.json.from }}",
+        "text": "={{ $('AI Agent').item.json.output }}",
+        "linkPreview": "=",
+        "requestOptions": {}
+      },
+      "type": "n8n-nodes-waha.WAHA",
+      "typeVersion": 202411,
+      "position": [
+        1392,
+        192
+      ],
+      "id": "f9a11823-f852-407c-9894-9f0b666431b9",
+      "name": "Send a text message",
+      "credentials": {
+        "wahaApi": {
+          "id": "qAKBG6FtE0uW8RZk",
+          "name": "WAHA account"
+        }
+      }
+    }
+  ],
+  "pinData": {
+    "Webhook": [
+      {
+        "json": {
+          "headers": {
+            "accept": "application/json, text/plain, */*",
+            "content-type": "application/json",
+            "user-agent": "WAHA/2026.5.1",
+            "x-webhook-request-id": "3w38331cmqrdfwig",
+            "x-webhook-timestamp": "1782263114581",
+            "content-length": "3338",
+            "accept-encoding": "gzip, compress, deflate, br",
+            "host": "host.docker.internal:5678",
+            "connection": "keep-alive"
+          },
+          "params": {},
+          "query": {},
+          "body": {
+            "id": "evt_01kvvjhtsaqfzrjy7dbbj7jefk",
+            "timestamp": 1782263114581,
+            "event": "message.any",
+            "session": "default",
+            "me": {
+              "id": "559189010567@c.us",
+              "pushName": "Matheus"
+            },
+            "payload": {
+              "id": "true_100433683030270@lid_AC69A51B66695071CA11B71ADB5C9522_out",
+              "timestamp": 1782263111,
+              "from": "559189010567@c.us",
+              "fromMe": true,
+              "participant": "out@c.us",
+              "source": "app",
+              "to": "100433683030270@lid",
+              "body": "Oi!",
+              "hasMedia": false,
+              "media": null,
+              "ack": 3,
+              "ackName": "READ",
+              "location": null,
+              "vCards": [],
+              "_data": {
+                "id": {
+                  "fromMe": true,
+                  "remote": "100433683030270@lid",
+                  "id": "AC69A51B66695071CA11B71ADB5C9522",
+                  "self": "out",
+                  "_serialized": "true_100433683030270@lid_AC69A51B66695071CA11B71ADB5C9522_out"
+                },
+                "viewed": false,
+                "body": "Oi!",
+                "type": "chat",
+                "t": 1782263111,
+                "clientReceivedTsMillis": 1782263111611,
+                "serverStoreTimeMicros": 1782263111711127,
+                "notifyName": "Matheus",
+                "from": "559189010567@c.us",
+                "to": "100433683030270@lid",
+                "author": "100433683030270@lid",
+                "ack": 3,
+                "invis": false,
+                "isNewMsg": true,
+                "star": false,
+                "kicNotified": false,
+                "recvFresh": true,
+                "isFromTemplate": false,
+                "thumbnail": "",
+                "richPreviewType": 0,
+                "faviconMMSMetadata": null,
+                "isAdsMedia": false,
+                "pollInvalidated": false,
+                "isSentCagPollCreation": false,
+                "latestEditMsgKey": null,
+                "latestEditSenderTimestampMs": null,
+                "mentionedJidList": [],
+                "groupMentions": [],
+                "isEventCanceled": false,
+                "eventInvalidated": false,
+                "statusMentioned": false,
+                "isVcardOverMmsDocument": false,
+                "questionReplyQuotedMessage": null,
+                "questionResponsesCount": 0,
+                "readQuestionResponsesCount": 0,
+                "forwardsCount": 0,
+                "hasReaction": false,
+                "newsletterAdminProfile": null,
+                "expiredTimestamp": null,
+                "viewMode": "VISIBLE",
+                "messageSecret": {
+                  "0": 69,
+                  "1": 217,
+                  "2": 162,
+                  "3": 107,
+                  "4": 202,
+                  "5": 62,
+                  "6": 166,
+                  "7": 38,
+                  "8": 198,
+                  "9": 7,
+                  "10": 42,
+                  "11": 47,
+                  "12": 177,
+                  "13": 16,
+                  "14": 203,
+                  "15": 244,
+                  "16": 99,
+                  "17": 178,
+                  "18": 245,
+                  "19": 248,
+                  "20": 68,
+                  "21": 220,
+                  "22": 40,
+                  "23": 189,
+                  "24": 112,
+                  "25": 125,
+                  "26": 15,
+                  "27": 4,
+                  "28": 35,
+                  "29": 36,
+                  "30": 153,
+                  "31": 21
+                },
+                "inviteGrpType": "DEFAULT",
+                "productHeaderImageRejected": false,
+                "lastPlaybackProgress": 0,
+                "isDynamicReplyButtonsMsg": false,
+                "isCarouselCard": false,
+                "parentMsgId": null,
+                "callSilenceReason": null,
+                "isVideoCall": false,
+                "callDuration": null,
+                "callCreator": null,
+                "callParticipants": null,
+                "isCallLink": null,
+                "callLinkToken": null,
+                "terminatedByDeviceSwitch": null,
+                "selfOtherDeviceConnected": null,
+                "bytesSent": null,
+                "bytesReceived": null,
+                "isMdHistoryMsg": false,
+                "stickerSentTs": 0,
+                "isAvatar": false,
+                "lastUpdateFromServerTs": 0,
+                "invokedBotWid": null,
+                "bizBotType": null,
+                "aiMediaCollectionInfo": null,
+                "expectedImageCount": null,
+                "expectedVideoCount": null,
+                "botResponseTargetId": null,
+                "botPluginType": null,
+                "botPluginReferenceIndex": null,
+                "botPluginSearchProvider": null,
+                "botPluginSearchUrl": null,
+                "botPluginSearchQuery": null,
+                "botPluginMaybeParent": false,
+                "botReelPluginThumbnailCdnUrl": null,
+                "botMessageDisclaimerText": null,
+                "botSessionTransparencyType": null,
+                "botMsgBodyType": null,
+                "botModeSelection": null,
+                "botModeOverride": null,
+                "reportingTokenInfo": null,
+                "hatchMetadataSync": null,
+                "requiresDirectConnection": null,
+                "bizContentPlaceholderType": null,
+                "hostedBizEncStateMismatch": false,
+                "senderOrRecipientAccountTypeHosted": false,
+                "placeholderCreatedWhenAccountIsHosted": false,
+                "groupHistoryBundleMessageKey": null,
+                "groupHistoryBundleMetadata": null,
+                "groupHistoryIndividualMessageInfo": null,
+                "links": []
+              }
+            },
+            "engine": "WEBJS",
+            "environment": {
+              "version": "2026.5.1",
+              "engine": "WEBJS",
+              "tier": "CORE",
+              "browser": "/usr/bin/chromium",
+              "platform": "linux/x64",
+              "worker": {
+                "id": null
+              }
+            }
+          },
+          "webhookUrl": "http://localhost:5678/webhook/waha",
+          "executionMode": "production"
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      }
+    ]
+  },
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "dados",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "dados": {
+      "main": [
+        [
+          {
+            "node": "ignora API",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ignora API": {
+      "main": [
+        [],
+        [
+          {
+            "node": "ignora grupos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ignora grupos": {
+      "main": [
+        [],
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Send Seen",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Seen": {
+      "main": [
+        [
+          {
+            "node": "Send a text message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "76e87475-47e5-4474-86e3-33b9bec9d40e",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "77ab61649f5c379c2e1082a274183cf2f4d3b46d9794d8eff8ad7c645e62163d"
+  },
+  "nodeGroups": [],
+  "id": "0uagghxbVeckYaGQ",
+  "tags": []
+}

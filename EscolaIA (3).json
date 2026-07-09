@@ -1,0 +1,355 @@
+{
+  "name": "EscolaIA",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "waha",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "a6637253-6f98-4d97-977c-5142f1904e2d",
+      "name": "Webhook",
+      "webhookId": "7a89730d-a76e-409a-bb66-cba22ddeedcf"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "d896e269-d7d3-4b9e-a74d-5d987bf12c55",
+              "name": "session",
+              "value": "={{ $json.body.session }}",
+              "type": "string"
+            },
+            {
+              "id": "4c35a867-c157-434f-a744-ad401a60c4fb",
+              "name": "from",
+              "value": "={{ $json.body.payload.from }}",
+              "type": "string"
+            },
+            {
+              "id": "a505862b-0c45-4fd1-ae43-a8c90424a11e",
+              "name": "fromMe",
+              "value": "={{ $json.body.payload.fromMe }}",
+              "type": "boolean"
+            },
+            {
+              "id": "69d476ab-6b12-4fac-a242-218912074605",
+              "name": "source",
+              "value": "={{ $json.body.payload.source }}",
+              "type": "string"
+            },
+            {
+              "id": "b5379c1a-7adc-476e-9ea5-e5b6accb3963",
+              "name": "body",
+              "value": "={{ $json.body.payload.body }}",
+              "type": "string"
+            },
+            {
+              "id": "1fd7c00d-0bfa-4ed1-9e7a-8d566360b1cd",
+              "name": "type",
+              "value": "={{ $json.body.payload._data.type }}",
+              "type": "string"
+            },
+            {
+              "id": "fcef30e2-66a0-4757-b54b-e379ec8d660c",
+              "name": "id",
+              "value": "={{ $json.body.payload._data.id.id }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        208,
+        0
+      ],
+      "id": "18fdc29c-6943-4ed9-bf14-b90096a7a1ee",
+      "name": "dados"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "8baad521-f476-4e26-a7d6-f94262113328",
+              "leftValue": "={{ $json.source }}",
+              "rightValue": "api",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        416,
+        0
+      ],
+      "id": "bc0dbb09-f28b-4b70-8517-bd7949ad5497",
+      "name": "ignora API"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "e53bd301-e09c-4815-b967-58531bb1af16",
+              "leftValue": "={{ $('Webhook').item.json.body.payload.to }}",
+              "rightValue": "@g.us",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        624,
+        96
+      ],
+      "id": "12e38987-19d5-4fb1-8c46-e580f8c6d6df",
+      "name": "ignora grupos"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $('dados').item.json.body }}",
+        "options": {
+          "systemMessage": "Você é a EscolaIA, uma assistente virtual especializada em ajudar professores da Educação Básica e Ensino Médio a criar materiais pedagógicos de forma rápida e organizada.\n\nSeu objetivo principal é economizar o tempo dos professores, entregando conteúdos personalizados e alinhados às práticas educacionais brasileiras.\n\n### PERSONALIDADE\n- Seja profissional, acolhedora e objetiva.\n- Responda de forma clara, usando listas e negrito para facilitar a leitura no WhatsApp.\n- Evite mensagens longas.\n\n### PRIMEIRO CONTATO\nApresente-se de forma amigável e mostre suas principais capacidades.\n\n### FLUXO DE ATENDIMENTO\n1. Colete as informações essenciais fazendo **apenas uma pergunta por vez** (Ano/Série, Disciplina e Tema).\n2. Confirme os dados antes de gerar o material.\n3. Após entregar o conteúdo, pergunte sempre se deseja ajustes.\n\n### CAPACIDADES\nVocê pode criar: Planos de aula, provas/avaliações, listas de exercícios, gabaritos, resumos, atividades práticas, dinâmicas, sequências didáticas, planejamentos e cronogramas.\n\n### ESTRUTURA DE PLANOS DE AULA\nOrganize em: Tema, Ano/Série, Objetivos, Habilidades BNCC (quando aplicável), Conteúdo, Metodologia, Recursos, Avaliação e Tempo estimado.\n\n### FORMATO DE ENTREGA\nApós gerar o material em texto, pergunte:\n\"Como prefere receber?\nTexto\nPDF\nExcel\"\n\n### REGRAS IMPORTANTES\n- Sempre adapte o conteúdo à BNCC sem inventar códigos ou habilidades.\n- Faça apenas uma pergunta por vez.\n- Mantenha o contexto da conversa.\n- Se a solicitação não for pedagógica, redirecione gentilmente.\n- Seja rápida nos ajustes solicitados."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        832,
+        192
+      ],
+      "id": "aaa95f08-44ea-4c00-a3e6-db48dc610737",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-3.1-flash-lite",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1.1,
+      "position": [
+        704,
+        400
+      ],
+      "id": "e1524499-e5a7-46c8-8eef-897035800273",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "M4ZdAncYTNcOkJzS",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $('dados').item.json.from }}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.4,
+      "position": [
+        848,
+        400
+      ],
+      "id": "2426a94a-c2a3-46a1-8724-2435b1bd146e",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "resource": "Chatting",
+        "operation": "Send Seen",
+        "session": "={{ $('dados').item.json.session }}",
+        "chatId": "={{ $('dados').item.json.from }}",
+        "messageId": "={{ $('dados').item.json.id }}",
+        "participant": "",
+        "requestOptions": {}
+      },
+      "type": "n8n-nodes-waha.WAHA",
+      "typeVersion": 202411,
+      "position": [
+        1184,
+        192
+      ],
+      "id": "3d83a554-7dde-4117-9454-dff06e976e61",
+      "name": "Send Seen",
+      "credentials": {
+        "wahaApi": {
+          "id": "qAKBG6FtE0uW8RZk",
+          "name": "WAHA account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "Chatting",
+        "operation": "Send Text",
+        "session": "={{ $('dados').item.json.session }}",
+        "chatId": "={{ $('dados').item.json.from }}",
+        "text": "={{ $('AI Agent').item.json.output }}",
+        "linkPreview": "=",
+        "requestOptions": {}
+      },
+      "type": "n8n-nodes-waha.WAHA",
+      "typeVersion": 202411,
+      "position": [
+        1392,
+        192
+      ],
+      "id": "f9a11823-f852-407c-9894-9f0b666431b9",
+      "name": "Send a text message",
+      "credentials": {
+        "wahaApi": {
+          "id": "qAKBG6FtE0uW8RZk",
+          "name": "WAHA account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "dados",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "dados": {
+      "main": [
+        [
+          {
+            "node": "ignora API",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ignora API": {
+      "main": [
+        [],
+        [
+          {
+            "node": "ignora grupos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ignora grupos": {
+      "main": [
+        [],
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Send Seen",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Seen": {
+      "main": [
+        [
+          {
+            "node": "Send a text message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "5ee2a434-bbe5-45c4-b5a9-28573c9b0680",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "77ab61649f5c379c2e1082a274183cf2f4d3b46d9794d8eff8ad7c645e62163d"
+  },
+  "nodeGroups": [],
+  "id": "0uagghxbVeckYaGQ",
+  "tags": []
+}
